@@ -1,0 +1,36 @@
+window.renderSite&&renderSite();
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+$('.burger')?.addEventListener('click',()=>$('nav').classList.toggle('open'));
+$$('nav a').forEach(a=>a.addEventListener('click',()=>$('nav').classList.remove('open')));
+$$('section').forEach(s=>$$('.rv',s).forEach((e,i)=>e.style.setProperty('--d',e.closest('[data-solo]')?'0s':Math.min(i*.12,.7)+'s')));
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+$$('.rv').forEach(e=>io.observe(e));
+const run=el=>{const to=+el.dataset.to,dec=+(el.dataset.dec||0),suf=el.dataset.suf||'',t0=performance.now(),D=1800;
+const f=t=>{const p=Math.min((t-t0)/D,1),v=to*(1-Math.pow(1-p,3));el.textContent=v.toFixed(dec)+suf;p<1&&requestAnimationFrame(f)};requestAnimationFrame(f)};
+const co=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){run(e.target);co.unobserve(e.target)}}),{threshold:.6});
+$$('[data-to]').forEach(e=>co.observe(e));
+const sl=$$('.slide'),dots=$('.dots');
+if(sl.length){let n=0,timer;
+const go=i=>{n=i;sl.forEach((s,k)=>s.classList.toggle('active',k===i));$$('button',dots).forEach((b,k)=>b.classList.toggle('active',k===i))};
+const auto=()=>{clearInterval(timer);timer=setInterval(()=>go((n+1)%sl.length),6000)};
+sl.forEach((_,i)=>{const b=document.createElement('button');b.setAttribute('aria-label','Show testimonial '+(i+1));b.onclick=()=>{go(i);auto()};dots.append(b)});
+$('.slider').addEventListener('click',()=>{go((n+1)%sl.length);auto()});go(0);auto()}
+const tr=$('.track');if(tr)tr.innerHTML+=tr.innerHTML;
+const tabs=$('.tabs');
+if(tabs){const cards=$$('.pcard'),btns=$$('button',tabs),pill=$('.pill',tabs);
+const mv=b=>{pill.style.left=b.offsetLeft+'px';pill.style.width=b.offsetWidth+'px'};
+const show=(cat,first)=>{const apply=()=>{let i=0;cards.forEach(c=>{const ok=cat==='all'||c.dataset.cat===cat;c.hidden=!ok;c.classList.remove('out');if(ok){c.style.transitionDelay=Math.min(i++*.08,.6)+'s';io.observe(c)}});setTimeout(()=>cards.forEach(c=>c.style.transitionDelay=''),1200)};
+if(first)return apply();cards.forEach(c=>c.classList.add('out'));setTimeout(apply,350)};
+btns.forEach(b=>b.addEventListener('click',()=>{btns.forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-selected',x===b)});mv(b);show(b.dataset.f)}));
+const cur=()=>btns.find(b=>b.classList.contains('on'));addEventListener('resize',()=>mv(cur()));
+document.fonts.ready.then(()=>mv(cur()));mv(cur());
+const lb=$('.lb'),box=$('.lbx',lb);let last;
+const open=c=>{last=c;box.querySelector('.pt').innerHTML=c.querySelector('.pt').innerHTML;$('.tg',box).textContent=c.querySelector('.tg').textContent;$('h3',box).textContent=c.querySelector('h3').textContent;$('p',box).textContent=c.dataset.long||c.querySelector('p').textContent;lb.classList.add('open');$('.lbc',lb).focus()};
+const close=()=>{lb.classList.remove('open');last&&last.focus()};
+cards.forEach(c=>{c.addEventListener('click',()=>open(c));c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open(c)}})});
+$('.lbc',lb).onclick=close;lb.addEventListener('click',e=>{if(e.target===lb)close()});addEventListener('keydown',e=>e.key==='Escape'&&close())}
+const cform=$('#cf');
+if(cform)cform.addEventListener('submit',e=>{e.preventDefault();const d=Object.fromEntries(new FormData(cform));
+const body=`Name: ${d.name}\nEmail: ${d.email}\nProject type: ${d.type}\nBudget: ${d.budget}\n\n${d.message}`;
+location.href='mailto:'+((window.SITE&&SITE.contact&&SITE.contact.email)||'skabusufyan902@gmail.com')+'?subject='+encodeURIComponent('Project enquiry from '+d.name)+'&body='+encodeURIComponent(body);
+const m=$('.msg',cform);m.className='msg ok';m.textContent='Thank you! Your email app should open with your message ready to send.'});
